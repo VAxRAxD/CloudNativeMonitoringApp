@@ -22,7 +22,7 @@ deployment = client.V1Deployment(
                     client.V1Container(
                         name="server-monitoring-container",
                         image="031677989988.dkr.ecr.us-east-1.amazonaws.com/server_monitoring:latest",
-                        ports=[client.V1ContainerPort(container_port=5000)]
+                        ports=[client.V1ContainerPort(container_port=8000)]
                     )
                 ]
             )
