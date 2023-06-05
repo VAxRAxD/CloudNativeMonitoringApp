@@ -1,5 +1,6 @@
 fastapi
 uvicorn
 psutil
+jinja2
 boto3
 kubernetes
