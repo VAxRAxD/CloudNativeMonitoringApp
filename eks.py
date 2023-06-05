@@ -5,29 +5,24 @@ config.load_kube_config()
 
 api_client=client.ApiClient()
 
-#Deployment
+#Deployment Configure
+container = client.V1Container(
+    name="server-monitoring",
+    image="",
+    ports=[client.V1ContainerPort(container_port=8000)]
+)
+template = client.V1PodTemplateSpec(
+    metadata=client.V1ObjectMeta(labels={"app": "server-monitoring"}),
+    spec=client.V1PodSpec(containers=[container]),
+)
+spec = client.V1DeploymentSpec(
+    replicas=1, template=template, selector={"matchLabels":{"app": "server-monitoring"}})
+
 deployment = client.V1Deployment(
-    metadata=client.V1ObjectMeta(name="server-monitoring"),
-    spec=client.V1DeploymentSpec(
-        replicas=1,
-        selector=client.V1LabelSelector(
-            match_labels={"app": "server-monitoring"}
-        ),
-        template=client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(
-                labels={"app": "server-monitoring"}
-            ),
-            spec=client.V1PodSpec(
-                containers=[
-                    client.V1Container(
-                        name="server-monitoring-container",
-                        image="031677989988.dkr.ecr.us-east-1.amazonaws.com/server_monitoring:latest",
-                        ports=[client.V1ContainerPort(container_port=8000)]
-                    )
-                ]
-            )
-        )
-    )
+    api_version="apps/v1",
+    kind="Deployment",
+    metadata=client.V1ObjectMeta(name="server-monitor-deployment"),
+    spec=spec,
 )
 
 #Create Deployment
@@ -37,7 +32,7 @@ api_instance.create_namespaced_deployment(
     body=deployment
 )
 
-#Servive
+#Servive Configure
 service = client.V1Service(
     metadata=client.V1ObjectMeta(name="server-monitoring-service"),
     spec=client.V1ServiceSpec(
