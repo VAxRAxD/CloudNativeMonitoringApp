@@ -1,6 +1,6 @@
 from kubernetes import client,config
 
-# aws eks update-kubeconfig --name cloud-native-cluster
+# aws eks update-kubeconfig --name <cluster-name>
 config.load_kube_config()
 
 api_client=client.ApiClient()
@@ -8,7 +8,7 @@ api_client=client.ApiClient()
 #Deployment Configure
 container = client.V1Container(
     name="server-monitoring",
-    image="",
+    image="031677989988.dkr.ecr.us-east-1.amazonaws.com/server_monitoring:latest",
     ports=[client.V1ContainerPort(container_port=8000)]
 )
 template = client.V1PodTemplateSpec(
@@ -16,7 +16,7 @@ template = client.V1PodTemplateSpec(
     spec=client.V1PodSpec(containers=[container]),
 )
 spec = client.V1DeploymentSpec(
-    replicas=1, template=template, selector={"matchLabels":{"app": "server-monitoring"}})
+    replicas=1  , template=template, selector={"matchLabels":{"app": "server-monitoring"}})
 
 deployment = client.V1Deployment(
     api_version="apps/v1",
