@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>System Monitoring</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-evenly">
+            <div class="col-5" id="cpu-gauge"></div>
+            <div class="col-5" id="mem-gauge"></div>
+        </div>
+        <center><div id="address">{{ ip }}</div></center>
+        <div class="row justify-content-evenly">
+            <div class="col-5" id="disk-gauge"></div>
+            <div class="col-5" id="net-gauge"></div>
+        </div>
+    </div>
+    <script>
+        var cpuGauge = {
+        type: "indicator",
+        mode: "gauge+number",
+        value: '{{ cpu_metric|safe }}',
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: "#1f77b4" },
+            bgcolor: "white",
+            borderwidth: 2,
+            bordercolor: "#ccc",
+            steps: [
+                { range: [0, 50], color: "#d9f0a3" },
+                { range: [50, 85], color: "#ffeb84" },
+                { range: [85, 100], color: "#ff5f5f" }
+            ],
+            threshold: {
+                line: { color: "#454545", width: 4 },
+                thickness: 0.75,
+                value: '{{ cpu_metric|safe }}'
+            }
+        }
+    };
+
+    var memGauge = {
+        type: "indicator",
+        mode: "gauge+number",
+        value: '{{ mem_metric|safe }}',
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: "#1f77b4" },
+            bgcolor: "white",
+            borderwidth: 2,
+            bordercolor: "#ccc",
+            steps: [
+                { range: [0, 50], color: "#d9f0a3" },
+                { range: [50, 85], color: "#ffeb84" },
+                { range: [85, 100], color: "#ff5f5f" }
+            ],
+            threshold: {
+                line: { color: "#454545", width: 4 },
+                thickness: 0.75,
+                value: '{{ mem_metric|safe }}'
+            }
+        }
+    };
+
+    var diskGauge = {
+        type: "indicator",
+        mode: "gauge+number",
+        value: '{{ disk_metric|safe }}',
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: "#1f77b4" },
+            bgcolor: "white",
+            borderwidth: 2,
+            bordercolor: "#ccc",
+            steps: [
+                { range: [0, 50], color: "#d9f0a3" },
+                { range: [50, 85], color: "#ffeb84" },
+                { range: [85, 100], color: "#ff5f5f" }
+            ],
+            threshold: {
+                line: { color: "#454545", width: 4 },
+                thickness: 0.75,
+                value: '{{ disk_metric|safe }}'
+            }
+        }
+    };
+
+    var netGauge = {
+        type: "indicator",
+        mode: "gauge+number",
+        value: '{{ net_metric|safe }}',
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: "#1f77b4" },
+            bgcolor: "white",
+            borderwidth: 2,
+            bordercolor: "#ccc",
+            steps: [
+                { range: [0, 5], color: "#DC3535" },
+                { range: [5, 10], color: "#ff5f5f" },
+                { range: [10, 20], color: "#ffeb84" },
+                { range: [20, 50], color: "#d9f0a3" },
+                { range: [50, 100], color: "#9FC088" },
+            ],
+            threshold: {
+                line: { color: "#454545", width: 4 },
+                thickness: 0.75,
+                value: '{{ net_metric|safe }}'
+            }
+        }
+    };
+
+    var cpuGaugeLayout = { title: "CPU Utilization (%)", height:370};
+    var memGaugeLayout = { title: "Memory Utilization (%)", height:370};
+    var diskGaugeLayout = { title: "Disk Utilization (%)", height:370};
+    var netGaugeLayout = { title: "Network Speed (Mbits/s)", height:370}
+    Plotly.newPlot('cpu-gauge', [cpuGauge], cpuGaugeLayout);
+    Plotly.newPlot('mem-gauge', [memGauge], memGaugeLayout);
+    Plotly.newPlot('disk-gauge', [diskGauge], diskGaugeLayout)
+    Plotly.newPlot('net-gauge', [netGauge], netGaugeLayout)
+    </script>
+</body>
+</html>
