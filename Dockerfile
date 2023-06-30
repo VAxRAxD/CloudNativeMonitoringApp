@@ -8,6 +8,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8000
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=80
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0"]
+EXPOSE 80
+
+CMD ["flask", "run"]

@@ -9,6 +9,17 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    
+    {% for server in servers %}
+        <a href="http://{{ server.Ip }}/dashboard/">{{ server.Ip }} {{ server.Username }}</a>
+    {% endfor %}
+    <form action="http://127.0.0.1:5000/add/" method="POST" enctype="multipart/form-data">
+        <label for="ipaddr">IP Address:</label>
+        <input type="text" id="ipaddr" name="ipaddr" autocomplete="off"><br><br>
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name" autocomplete="off"><br><br>
+        <label for="file">Upload Keyfile:</label>
+        <input type="file" id="file" name="file"/><br><br>
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>

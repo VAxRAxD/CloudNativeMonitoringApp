@@ -1,8 +1,4 @@
-fastapi
-uvicorn
+flask
 psutil
-jinja2
-boto3
-kubernetes
 speedtest-cli
 fabric<2.0
