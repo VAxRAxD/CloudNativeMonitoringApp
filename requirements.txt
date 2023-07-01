@@ -1,4 +1,6 @@
+apscheduler
+fabric<2.0
 flask
+flask-socketio
 psutil
 speedtest-cli
-fabric<2.0

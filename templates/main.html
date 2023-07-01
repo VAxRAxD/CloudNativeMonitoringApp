@@ -5,14 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Monitoring</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap');
+        .servers{
+            margin-top: 35px;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 5px;
+        }
+        .monitor{
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        .menu{
+            overflow: hidden;
+            background-color: #333;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 30px;
+        }
+        .menu a, p {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 4px 13px;
+            text-decoration: none;
+        }
+        .logo{
+            padding-bottom: 2px;
+        }
+        #company{
+            color: #45CFDD;
+            font-family: Caveat;
+            font-size: large;
+            padding-top: 2px;
+        }
+        #company:hover{
+            cursor: default;
+        }
+    </style>
 </head>
 <body>
-    {% for server in servers %}
-        <a href="http://{{ server.Ip }}/dashboard/">{{ server.Ip }} {{ server.Username }}</a>
-    {% endfor %}
-    <form action="http://127.0.0.1:5000/add/" method="POST" enctype="multipart/form-data">
+    <div class="menu">
+        <p id="company">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                <style>svg{fill:#ffffff}</style>
+                <path 
+                    d="M64 32C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm280 72a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm48 24a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V352c0-35.3-28.7-64-64-64H64zm280 72a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm56 24a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z"/>
+            </svg> CloudWatch
+        </p>
+        <a href="#"> 
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+                <style>svg{fill:#ffffff}</style>
+                <path 
+                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/>
+            </svg> Add Server</a>
+        <a href="#contact">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
+                <style>svg{fill:#ffffff}</style>
+                <path 
+                    d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 256h64c44.2 0 80 35.8 80 80c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16c0-44.2 35.8-80 80-80zm-32-96a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zm256-32H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+            </svg> Contact Us</a>
+    </div>
+    <div class="servers">
+        {% for server in servers %}
+        <div class="card" style="width: 18rem; height:fit-content">
+            <img src="https://cdn.pixabay.com/photo/2020/10/22/06/25/computer-5675047_1280.png" class="srv-img card-img-top" style="height: 40%;">
+            <center><h5 class="card-title">{{ server.Username }}@{{ server.Ip }}</h5></center>
+            <center><div>
+                <a class="monitor btn btn-dark" href="http://{{ server.Ip }}/dashboard/">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
+                        <style>svg{fill:#ffffff}</style>
+                        <path 
+                            d="M384 96V320H64L64 96H384zM64 32C28.7 32 0 60.7 0 96V320c0 35.3 28.7 64 64 64H181.3l-10.7 32H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H352c17.7 0 32-14.3 32-32s-14.3-32-32-32H277.3l-10.7-32H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm464 0c-26.5 0-48 21.5-48 48V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48H528zm16 64h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H544c-8.8 0-16-7.2-16-16s7.2-16 16-16zm-16 80c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H544c-8.8 0-16-7.2-16-16zm32 160a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                    </svg>
+                    Monitor
+                </a> 
+                <a class="monitor btn btn-dark" href="http://{{ server.Ip }}/dashboard/">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                        <style>svg{fill:#ffffff}</style>
+                        <path 
+                            d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM112 256H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+                    </svg>
+                    Logs
+                </a>    
+            </div>
+            </center>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- <form action="http://127.0.0.1:5000/add/" method="POST" enctype="multipart/form-data">
         <label for="ipaddr">IP Address:</label>
         <input type="text" id="ipaddr" name="ipaddr" autocomplete="off"><br><br>
         <label for="name">Username:</label>
@@ -20,6 +107,6 @@
         <label for="file">Upload Keyfile:</label>
         <input type="file" id="file" name="file"/><br><br>
         <input type="submit" value="Submit">
-    </form>
+    </form> -->
 </body>
 </html>
