@@ -43,5 +43,13 @@ def addData(ip,name):
     conn.commit()
     conn.close()
 
+def delData(ip):
+    conn=sqlite3.connect('serversdb.sqlite3')
+    cursor=conn.cursor()
+    cursor.execute("DELETE FROM Servers WHERE Ip=?;",(ip,))
+    cursor.close()
+    conn.commit()
+    conn.close()
+
 if __name__ == '__main__':
     createTable()

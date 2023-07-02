@@ -1,5 +1,5 @@
 import psutil, speedtest, subprocess, os, urllib.request
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, json, make_response
 from database import *
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -25,8 +25,6 @@ scheduler = BackgroundScheduler()
 device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=2)
 scheduler.start()
 
-
-
 @app.route("/",methods=['GET'])
 def home():
     servers=viewData()
@@ -51,6 +49,12 @@ def dashboard():
 @app.route("/metrics/",methods=['GET'])
 def metrics():
     return [{'cpu_metric':CPU_METRIC,'mem_metric':MEM_METRIC,'disk_metric':DISK_METRIC,'net_metric':NET_METRIC}]
+
+@app.route("/delete/",methods=['POST'])
+def deleteData():
+    data=json.loads(request.data)
+    delData(data['ip'])
+    return [{'deletion':'success'}]
 
 if __name__ == '__main__':
     app.run(debug=True)
