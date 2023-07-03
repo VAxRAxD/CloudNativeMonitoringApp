@@ -1,18 +1,21 @@
-import psutil, speedtest, subprocess, os, urllib.request
-from flask import Flask, render_template, request, redirect, json, make_response
+import psutil, speedtest, subprocess, os, urllib.request, requests
+from flask import Flask, render_template, request, redirect, json,send_file
+from datetime import datetime
 from database import *
 from apscheduler.schedulers.background import BackgroundScheduler
 
 UPLOAD_FOLDER='keys/'
+LOGS_FOLDER='logs/'
 
 app=Flask(__name__)
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
+app.config['LOGS_FOLDER']=LOGS_FOLDER
 
-NET_METRIC,CPU_METRIC,MEM_METRIC,DISK_METRIC=2,None,None,None
+NET_METRIC,CPU_METRIC,MEM_METRIC,DISK_METRIC=60,None,None,None
 
 def netUSage():
     global NET_METRIC
-    NET_METRIC=(speedtest.Speedtest().download())/(10**7)
+    NET_METRIC=round((speedtest.Speedtest().download())/(10**7),2)
 
 def deviceStat():
     global CPU_METRIC, MEM_METRIC, DISK_METRIC
@@ -20,9 +23,16 @@ def deviceStat():
     MEM_METRIC=psutil.virtual_memory().percent
     DISK_METRIC=psutil.disk_usage('/').percent
 
+def insertLogs():
+    global CPU_METRIC, MEM_METRIC, DISK_METRIC, NET_METRIC
+    url='http://127.0.0.1:5000/reg'
+    data={'ip':'127.0.0.1:5000','cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
+    requests.post(url,json=data)
+
 scheduler = BackgroundScheduler()
-# network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5)
-device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=2)
+# network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
+device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=1,id='dvc')
+logs_job=scheduler.add_job(insertLogs, 'interval',seconds=5,max_instances=1,id='log')
 scheduler.start()
 
 @app.route("/",methods=['GET'])
@@ -37,8 +47,11 @@ def addServer():
     key=request.files["file"]
     filename=ipaddr+"-"+name+"."+key.filename.split(".")[-1]
     key.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    addData(ipaddr,name)
-    subprocess.run([f"./inject.sh {ipaddr} {name} keys/{filename}"],shell=True) 
+    addData(ipaddr,name,filename)
+    os.system(f"touch logs/{ipaddr}-{name}")
+    # subprocess.run([f"./inject.sh {ipaddr} {name} keys/{filename}"],shell=True)
+    os.system(f"fab -i {filename} -H {ipaddr} -u {name} installApp")
+    # os.system(f"./inject.sh {ipaddr} {name} keys/{filename}") 
     return redirect("/")
 
 @app.route("/dashboard/",methods=['GET'])
@@ -46,15 +59,71 @@ def dashboard():
     ip=urllib.request.urlopen('https://ident.me').read().decode('utf8')
     return render_template("dashboard.html",ip=ip)
 
+@app.route("/logboard/<ip>/",methods=['GET'])
+def logboard(ip):
+    user=getUser(ip)
+    return render_template('logs.html',ip=ip,user=user)
+
+@app.route("/reg/",methods=['POST'])
+def registerLogs():
+    data=json.loads(request.data)
+    ip=data['ip']
+    user=getUser(ip)
+    time=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    time+=" "*5
+    cpu=f'CPU UTILIZATION : {data["cpu"]}%'
+    cpu+=" "*(27-len(cpu))
+    mem=f'MEMORY UTILIZATION : {data["mem"]}%'
+    mem+=" "*(31-len(mem))
+    disk=f'DISK UTILIZATION : {data["disk"]}%'
+    disk+=" "*(29-len(disk))
+    if data['net']:
+        net=f'NETWORK SPEED : {data["net"]} MBITS/S'
+    else:
+        net='NETWORK SPEED : - MBITS/S'
+    report=time+cpu+mem+disk+net
+    os.system(f'echo "{report}">> logs/{ip}-{user}')
+    return [{'logs':'success'}]
+
+@app.route("/logs/<ip>/",methods=['GET'])
+def logs(ip):
+    user=getUser(ip)
+    record=list()
+    logs=open(f"logs/{ip}-{user}","r")
+    for log in logs:
+        s=log[:len(log)-1]
+        s=s.split('  ')
+        data=dict()
+        data['time']=s[0]
+        for i in range(1,len(s)-1):
+            k,v=s[i].split(':')
+            data[k.split(' ')[0].lower()]=float(v[:len(v)-1].strip())
+        k,v=s[len(s)-1].split(':')
+        if v.split(' ')[1]!="-":
+            data[k.split(' ')[0].lower()]=float(v.split(' ')[1])
+        else:
+            data[k.split(' ')[0].lower()]="-"
+        record.append(data)
+    return record
+
+@app.route("/return/<filename>/",methods=['GET'])
+def returnLog(filename):
+    return send_file(f"logs/{filename}",as_attachment=True,)
+
 @app.route("/metrics/",methods=['GET'])
 def metrics():
     return [{'cpu_metric':CPU_METRIC,'mem_metric':MEM_METRIC,'disk_metric':DISK_METRIC,'net_metric':NET_METRIC}]
 
-@app.route("/delete/",methods=['POST'])
+@app.route("/delete/",methods=['GET','POST'])
 def deleteData():
-    data=json.loads(request.data)
-    delData(data['ip'])
-    return [{'deletion':'success'}]
+    if request.method=='POST':
+        data=json.loads(request.data)
+        ip=data['ip']
+        user=getUser(ip)
+        filename=getFile(ip)
+        os.system(f"fab -i {filename} -H {ip} -u {user} terminateApp")
+        delData(data['ip'])
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)

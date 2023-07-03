@@ -6,3 +6,9 @@ def installApp():
     run("sudo chmod 777 /var/run/docker.sock")
     run("docker pull vaxraxd/monitoring")
     run("docker run -d --name=monitor -p 80:80 vaxraxd/monitoring")
+
+def terminateApp():
+    run("docker kill monitor")
+    run("docker rm monitor")
+    run("docker rmi vaxraxd/monitoring")
+    

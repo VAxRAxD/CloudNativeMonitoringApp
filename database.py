@@ -8,6 +8,7 @@ def createTable():
         "Id"	INTEGER,
         "Ip"	TEXT NOT NULL,
         "Username"	TEXT NOT NULL,
+        "Filename" TEXT NOT NULL,
         PRIMARY KEY("Id" AUTOINCREMENT  )
         );
         '''
@@ -35,10 +36,10 @@ def viewData():
     conn.close()
     return servers
 
-def addData(ip,name):
+def addData(ip,name,file):
     conn=sqlite3.connect('serversdb.sqlite3')
     cursor=conn.cursor()
-    cursor.execute("INSERT INTO Servers (Ip, Username) VALUES (?, ?);",(ip,name))
+    cursor.execute("INSERT INTO Servers (Ip, Username, Filename) VALUES (?, ?, ?);",(ip,name,file))
     cursor.close()
     conn.commit()
     conn.close()
@@ -50,6 +51,24 @@ def delData(ip):
     cursor.close()
     conn.commit()
     conn.close()
+
+def getUser(ip):
+    conn=sqlite3.connect('serversdb.sqlite3')
+    cursor=conn.cursor()
+    cursor.execute("SELECT * FROM SERVERS WHERE IP=?;",(ip,))
+    data=cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data[0][2]
+
+def getFile(ip):
+    conn=sqlite3.connect('serversdb.sqlite3')
+    cursor=conn.cursor()
+    cursor.execute("SELECT * FROM SERVERS WHERE IP=?;",(ip,))
+    data=cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data[0][3]
 
 if __name__ == '__main__':
     createTable()
