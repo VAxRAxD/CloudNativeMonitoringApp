@@ -43,8 +43,8 @@ def home():
 
 @app.route("/add/",methods=['POST'])
 def addServer():
-    ipaddr=request.form.get("ipaddr")
-    name=request.form.get("name")
+    ipaddr=request.form.get("ipaddr").strip()
+    name=request.form.get("name").strip()
     key=request.files["file"]
     filename=ipaddr+"-"+name+"."+key.filename.split(".")[-1]
     key.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -124,4 +124,4 @@ def deleteData():
     return redirect('/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0",port=80)
