@@ -48,6 +48,7 @@ def addServer():
     key=request.files["file"]
     filename=ipaddr+"-"+name+"."+key.filename.split(".")[-1]
     key.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    addData(ipaddr,name,filename)
     os.system(f"touch logs/{ipaddr}-{name}")
     os.system(f"fab -i keys/{filename} -H {ipaddr} -u {name} installApp") 
     return redirect("/")
