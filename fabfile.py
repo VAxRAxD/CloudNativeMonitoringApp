@@ -10,8 +10,5 @@ def installApp():
 def terminateApp():
     run("docker kill monitor")
     run("docker rm monitor")
-    run("docker rmi vaxraxd/monitoring")
-
-def demo():
-    run("rm -rf success")
+    run("docker rmi vaxraxd/monitoring:nodes")
     

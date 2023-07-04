@@ -36,8 +36,8 @@
     </style>
 </head>
 <body id="body">
-    <a class="home btn btn-dark" href="http://127.0.0.1:5000/"><i class="fa fa-home"></i> Home</a>
-    <a class="download btn btn-primary" href="http://127.0.0.1:5000/return/{{ ip}}-{{ user }}" download><i class="fa fa-cloud-download"></i> Download</a>
+    <a class="home btn btn-dark" href="http://vaxraxd.tech/"><i class="fa fa-home"></i> Home</a>
+    <a class="download btn btn-primary" href="http://vaxraxd.tech/return/{{ ip}}-{{ user }}" download><i class="fa fa-cloud-download"></i> Download</a>
     <a class="resume btn btn-success" href="" onclick="getLogs()"><i class="fa fa-refresh"></i> Refresh</a>
     <div id="temp"></div>
     <script>
@@ -97,7 +97,7 @@
                     }
                 }
             };
-            xhttp.open("GET", "http://127.0.0.1:5000/logs/{{ ip }}");
+            xhttp.open("GET", "http://vaxraxd.tech/logs/{{ ip }}");
             xhttp.send();
         }
         getLogs()

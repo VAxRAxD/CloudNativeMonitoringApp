@@ -25,15 +25,16 @@ def deviceStat():
 
 def insertLogs():
     global CPU_METRIC, MEM_METRIC, DISK_METRIC, NET_METRIC
-    url='http://vaxraxd.tech:5000/reg'
+    url='http://vaxraxd.tech/reg'
     data={'ip':f"{urllib.request.urlopen('https://ident.me').read().decode('utf8')}",'cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
     requests.post(url,json=data)
 
-scheduler = BackgroundScheduler()
-network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
-device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=1,id='dvc')
-# logs_job=scheduler.add_job(insertLogs, 'interval',seconds=5,max_instances=1,id='log')
-scheduler.start()
+if os.environ.get('SIDE')=='NODE':
+    scheduler = BackgroundScheduler()
+    network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
+    device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=1,id='dvc')
+    logs_job=scheduler.add_job(insertLogs, 'interval',seconds=5,max_instances=1,id='log')
+    scheduler.start()
 
 @app.route("/",methods=['GET'])
 def home():
@@ -47,11 +48,8 @@ def addServer():
     key=request.files["file"]
     filename=ipaddr+"-"+name+"."+key.filename.split(".")[-1]
     key.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    # addData(ipaddr,name,filename)
     os.system(f"touch logs/{ipaddr}-{name}")
-    # subprocess.run([f"./inject.sh {ipaddr} {name} keys/{filename}"],shell=True)
-    os.system(f"fab -i keys/{filename} -H {ipaddr} -u {name} demo")
-    # os.system(f"./inject.sh {ipaddr} {name} keys/{filename}") 
+    os.system(f"fab -i keys/{filename} -H {ipaddr} -u {name} installApp") 
     return redirect("/")
 
 @app.route("/dashboard/",methods=['GET'])
