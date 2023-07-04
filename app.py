@@ -122,8 +122,9 @@ def deleteData():
         user=getUser(ip)
         filename=getFile(ip)
         os.system(f"fab -i keys/{filename} -H {ip} -u {user} terminateApp")
+        os.system(f"rm -rf keys/{filename}")
+        os.system(f"rm -rf logs/{ip}-{user}")
         delData(data['ip'])
-        return {"Deletion":"Success"}
     return redirect('/')
 
 if __name__ == '__main__':
