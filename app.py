@@ -47,10 +47,10 @@ def addServer():
     key=request.files["file"]
     filename=ipaddr+"-"+name+"."+key.filename.split(".")[-1]
     key.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    addData(ipaddr,name,filename)
+    # addData(ipaddr,name,filename)
     os.system(f"touch logs/{ipaddr}-{name}")
     # subprocess.run([f"./inject.sh {ipaddr} {name} keys/{filename}"],shell=True)
-    os.system(f"fab -i {filename} -H {ipaddr} -u {name} installApp")
+    os.system(f"fab -i keys/{filename} -H {ipaddr} -u {name} demo")
     # os.system(f"./inject.sh {ipaddr} {name} keys/{filename}") 
     return redirect("/")
 
