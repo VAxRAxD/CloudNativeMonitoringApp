@@ -11,7 +11,7 @@ app=Flask(__name__)
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 app.config['LOGS_FOLDER']=LOGS_FOLDER
 
-NET_METRIC,CPU_METRIC,MEM_METRIC,DISK_METRIC=60,None,None,None
+NET_METRIC,CPU_METRIC,MEM_METRIC,DISK_METRIC=None,None,None,None
 
 def netUSage():
     global NET_METRIC
@@ -25,12 +25,12 @@ def deviceStat():
 
 def insertLogs():
     global CPU_METRIC, MEM_METRIC, DISK_METRIC, NET_METRIC
-    url='http://127.0.0.1:5000/reg'
-    data={'ip':'127.0.0.1:5000','cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
+    url='http://vaxraxd.tech/reg'
+    data={'ip':f"{urllib.request.urlopen('https://ident.me').read().decode('utf8')}",'cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
     requests.post(url,json=data)
 
 scheduler = BackgroundScheduler()
-# network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
+network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
 device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=1,id='dvc')
 logs_job=scheduler.add_job(insertLogs, 'interval',seconds=5,max_instances=1,id='log')
 scheduler.start()
