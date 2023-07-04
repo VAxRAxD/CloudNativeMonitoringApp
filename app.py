@@ -92,6 +92,7 @@ def logs(ip):
     for log in logs:
         s=log[:len(log)-1]
         s=s.split('  ')
+        s=[data.strip() for data in s if data!=""]
         data=dict()
         data['time']=s[0]
         for i in range(1,len(s)-1):
@@ -120,7 +121,7 @@ def deleteData():
         ip=data['ip']
         user=getUser(ip)
         filename=getFile(ip)
-        os.system(f"fab -i {filename} -H {ip} -u {user} terminateApp")
+        os.system(f"fab -i keys/{filename} -H {ip} -u {user} terminateApp")
         delData(data['ip'])
     return redirect('/')
 
