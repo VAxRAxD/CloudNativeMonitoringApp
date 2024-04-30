@@ -159,7 +159,7 @@
                     Plotly.newPlot('net-gauge', [netGauge], netGaugeLayout)
                 }
             };
-            xhttp.open("GET", "http://{{ ip }}/metrics/");
+            xhttp.open("GET", "http://{{ ip }}:5000/metrics/");
             xhttp.send();
         }
         plotGraph()

@@ -1,5 +1,6 @@
 import psutil, speedtest, subprocess, os, urllib.request, requests
 from flask import Flask, render_template, request, redirect, json,send_file
+from flask_cors import CORS
 from datetime import datetime
 from database import *
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -8,12 +9,13 @@ UPLOAD_FOLDER='keys/'
 LOGS_FOLDER='logs/'
 
 app=Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 app.config['LOGS_FOLDER']=LOGS_FOLDER
 
 NET_METRIC,CPU_METRIC,MEM_METRIC,DISK_METRIC=None,None,None,None
 
-def netUSage():
+def netUsage():
     global NET_METRIC
     NET_METRIC=round((speedtest.Speedtest().download())/(10**7),2)
 
@@ -25,13 +27,13 @@ def deviceStat():
 
 def insertLogs():
     global CPU_METRIC, MEM_METRIC, DISK_METRIC, NET_METRIC
-    url='http://3.93.164.141:5000//reg'
-    data={'ip':f"{urllib.request.urlopen('https://ident.me').read().decode('utf8')}",'cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
+    url='http://3.93.164.141:5000/reg'
+    data={'ip':f"{urllib.request.urlopen('https://ident.me').read().decode('utf8')}:5000",'cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
     requests.post(url,json=data)
 
 if os.environ.get('SIDE')=='NODE':
     scheduler = BackgroundScheduler()
-    network_job = scheduler.add_job(netUSage, 'interval', seconds=8, max_instances=5, id='ntw')
+    network_job = scheduler.add_job(netUsage, 'interval', seconds=8, max_instances=5, id='ntw')
     device_job = scheduler.add_job(deviceStat, 'interval', seconds=1, max_instances=1,id='dvc')
     logs_job=scheduler.add_job(insertLogs, 'interval',seconds=5,max_instances=1,id='log')
     scheduler.start()

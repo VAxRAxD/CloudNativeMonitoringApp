@@ -2,6 +2,7 @@ apscheduler
 fabric<2.0
 flask
 flask-socketio
+flask-cors
 psutil
 speedtest-cli
 requests
