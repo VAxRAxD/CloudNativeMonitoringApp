@@ -25,7 +25,7 @@ def deviceStat():
 
 def insertLogs():
     global CPU_METRIC, MEM_METRIC, DISK_METRIC, NET_METRIC
-    url='http://vaxraxd.tech/reg'
+    url='http://3.93.164.141:5000//reg'
     data={'ip':f"{urllib.request.urlopen('https://ident.me').read().decode('utf8')}",'cpu':CPU_METRIC, 'mem':MEM_METRIC,'disk':DISK_METRIC,'net':NET_METRIC}
     requests.post(url,json=data)
 

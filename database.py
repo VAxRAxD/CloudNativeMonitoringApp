@@ -28,7 +28,7 @@ def convertJson(desp,data):
 def viewData():
     conn=sqlite3.connect('serversdb.sqlite3')
     cursor=conn.cursor()
-    cursor.execute("SELECT * FROM SERVERS;")
+    cursor.execute("SELECT * FROM Servers;")
     description=list(map(lambda x: x[0], cursor.description))
     data=cursor.fetchall()
     servers=convertJson(description,data)
@@ -55,7 +55,7 @@ def delData(ip):
 def getUser(ip):
     conn=sqlite3.connect('serversdb.sqlite3')
     cursor=conn.cursor()
-    cursor.execute("SELECT * FROM SERVERS WHERE IP=?;",(ip,))
+    cursor.execute("SELECT * FROM Servers WHERE IP=?;",(ip,))
     data=cursor.fetchall()
     cursor.close()
     conn.close()
@@ -64,7 +64,7 @@ def getUser(ip):
 def getFile(ip):
     conn=sqlite3.connect('serversdb.sqlite3')
     cursor=conn.cursor()
-    cursor.execute("SELECT * FROM SERVERS WHERE IP=?;",(ip,))
+    cursor.execute("SELECT * FROM Servers WHERE IP=?;",(ip,))
     data=cursor.fetchall()
     cursor.close()
     conn.close()
